@@ -1,6 +1,7 @@
-import sys
+from preprocess import grayscale, threshold_process
+import os
 import csv
-#import cv2
+import cv2
 
 def read_csv(filename):
     img = []
@@ -12,12 +13,21 @@ def read_csv(filename):
         img.append(line[0])
         label_str.append(line[1])
     label = [int(i) for i in label_str]
-    print(img)
-    print(label)
+    return img, label
 
-def main():
-    filename = "./dataset/train_images.csv"
-    read_csv(filename)
+def read_img(filename, data, param):
+    img = []
+    grayed = param['grayed']
+    threshold = param['threshold']
+    for f in filename:
+        img.append(cv2.imread("../dataset/" + data + "_images/" + f))
+    if grayed:
+        img = grayscale(img)
+    if threshold:
+        img = threshold_process(img)
+    return img
 
-if __name__ == '__main__':
-    main()
+def write_img(img_list, filename, timestamp):
+    os.mkdir('./results/' + timestamp + '/preprocess')  # 結果を出力するディレクトリを作成
+    for i in range(len(img_list)):
+        cv2.imwrite('./results/' + timestamp + '/preprocess/' + filename[i], img_list[i])
