@@ -1,4 +1,4 @@
-from preprocess import grayscale, threshold_process
+from preprocess import grayscale, brightness, filter, morphology, threshold_process
 import os
 import csv
 import cv2
@@ -17,12 +17,22 @@ def read_csv(filename):
 
 def read_img(filename, data, param):
     img = []
+    print("Loading " + data + " image...")
     grayed = param['grayed']
+    bright = param['bright']
+    blur = param['blur']
+    morph = param['morph']
     threshold = param['threshold']
     for f in filename:
         img.append(cv2.imread("../dataset/" + data + "_images/" + f))
     if grayed:
         img = grayscale(img)
+    if bright:
+        img = brightness(img)
+    if blur:
+        img = filter(img)
+    if morph:
+        img = morphology(img)
     if threshold:
         img = threshold_process(img)
     return img

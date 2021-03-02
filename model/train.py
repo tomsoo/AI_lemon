@@ -13,8 +13,11 @@ def main():
     param = vars(args)  # コマンドライン引数を取り込み
     param.update({
         # 前処理
-        'grayed': False, # グレースケール
-        'threshold' : True, # 閾値処理
+        'grayed': True, # グレースケール
+        'bright': True, # 輝度調整
+        'blur' : True, # 平滑化(フィルター)
+        'morph' : False, # 平滑化(モルフォロジー)
+        'threshold' : False, # 閾値処理
     })  # 追加パラメータ
 
     # 実行時のパラメータをファイルとして記録
@@ -31,6 +34,8 @@ def main():
     # 前処理
     img = read_img(train_img, "train", param)
     write_img(img, train_img, timestamp)
+
+    print("Finished")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
