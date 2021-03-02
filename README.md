@@ -17,10 +17,9 @@ pip install -r requirements.txt
 
 ### プログラム構成
 
-train.py: mainとなる学習プログラム
-bi.py: 入出力関係
-preprocess.py: 前処理
-main_traffic.py: バイトレベルのトラヒックデータの生成
+- train.py: mainとなる学習プログラム
+- bi.py: 入出力関係
+- preprocess.py: 前処理
 
 train.py の基本的なパラメータは，コマンドライン引数とparam変数で与える．
 コマンドライン引数の説明は，
