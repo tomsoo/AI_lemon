@@ -2,6 +2,7 @@ from preprocess import grayscale, brightness, filter, morphology, threshold_proc
 import os
 import csv
 import cv2
+import pandas as pd
 
 def read_csv(filename):
     img = []
@@ -41,3 +42,10 @@ def write_img(img_list, filename, timestamp):
     os.mkdir('./results/' + timestamp + '/preprocess')  # 結果を出力するディレクトリを作成
     for i in range(len(img_list)):
         cv2.imwrite('./results/' + timestamp + '/preprocess/' + filename[i], img_list[i])
+
+def check_lemon_num():
+    df = pd.read_csv('./dataset/train_images.csv',sep=',')
+    df.head(3)
+
+if __name__=='__main__':
+    check_lemon_num()
