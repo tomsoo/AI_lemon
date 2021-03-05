@@ -1,7 +1,27 @@
 from preprocess import grayscale, brightness, filter, morphology, threshold_process
+import torch
+import pandas
+import PIL
 import os
 import csv
 import cv2
+
+class LemonDataset(torch.utils.data.Dataset):
+    def __init__(self, csv_path, images_folder, transform):
+        self.df = pandas.read_csv(csv_path)
+        self.images_folder = images_folder
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.df)
+
+    def __getitem__(self, index):
+        filename = self.df.at[index, 'id']
+        label = self.df.at[index, 'class_num']
+        img = PIL.Image.open(os.path.join(self.images_folder, filename))
+        if self.transform is not None:
+            img = self.transform(img)
+        return img, label
 
 def read_csv(filename):
     img = []
