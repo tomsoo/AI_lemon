@@ -1,6 +1,5 @@
-from bi import LemonDataset, read_csv, read_img, write_img
+from bi import LemonDataset
 from model import CNN
-import numpy as np
 import torch
 import torchvision
 import torch.nn as nn
@@ -99,7 +98,7 @@ def main():
             train_acc_list.append(train_acc)
             # 計算状態の出力
             running_loss += train_loss.item()
-        print('epochs: {}'.format(epoch))
+        print('epochs: {}'.format(epoch + 1))
         print('train loss:{}, train acc:{}'.format(train_loss, train_acc))
 
         valid_runnning_loss = 0.0
@@ -132,7 +131,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--train_file', type=str, default='../dataset/train_images.csv')
     parser.add_argument('--train_folder', type=str, default='../dataset/train_images/')
-    parser.add_argument('--valid_file', type=str, default='../dataset/eval_images.csv')
+    parser.add_argument('--valid_file', type=str, default='../dataset/valid_images.csv')
     parser.add_argument('--valid_folder', type=str, default='../dataset/train_images/')
     args = parser.parse_args()  # 引数解析
     main()
