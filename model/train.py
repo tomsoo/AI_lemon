@@ -47,7 +47,7 @@ def main():
     train_dataset = LemonDataset(train_file, train_folder, trans)
     train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 
-    valid_dataset = LemonDataset(train_file, train_folder, trans)
+    valid_dataset = LemonDataset(valid_file, valid_folder, trans)
     valid_dataloader = torch.utils.data.DataLoader(dataset=valid_dataset, batch_size=batch_size, shuffle=True)
     #train_img, train_label = read_csv(train_filename)
 
@@ -64,6 +64,11 @@ def main():
     # 損失関数とオプティマイザーの定義
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(cnn.parameters(), lr=0.001, momentum=0.9)
+
+    train_total = 0
+    train_correct = 0
+    train_loss_list = []
+    train_acc_list = []
 
     valid_total = 0
     valid_correct = 0
@@ -82,13 +87,22 @@ def main():
 
             # 順方向の計算、損失計算、バックプロパゲーション、パラメータ更新
             outputs = cnn(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
+            _, predicted = torch.max(outputs,1)
+            train_loss = criterion(outputs, labels)
+            train_loss.backward()
+
+            train_total += labels.size(0)
+            train_correct += (predicted == labels).sum().item()
+
+            train_acc = train_correct/train_total*100
             optimizer.step()
 
+            train_loss_list.append(train_loss)
+            train_acc_list.append(train_acc)
             # 計算状態の出力
-            running_loss += loss.item()
-        print('epoch: %d, loss: %.5f' % (epoch + 1, running_loss))
+            running_loss += train_loss.item()
+        print('epochs: {}'.format(epoch))
+        print('train loss:{}, train acc:{}'.format(train_loss, train_acc))
 
         valid_runnning_loss = 0.0
         with torch.no_grad():
@@ -120,7 +134,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--train_file', type=str, default='../dataset/train_images.csv')
     parser.add_argument('--train_folder', type=str, default='../dataset/train_images/')
-    parser.add_argument('--test_file', type=str, default='../dataset/test_images.csv')
-    parser.add_argument('--test_folder', type=str, default='../dataset/test_images/')
+    parser.add_argument('--valid_file', type=str, default='../dataset/valid_images.csv')
+    parser.add_argument('--valid_folder', type=str, default='../dataset/train_images/')
     args = parser.parse_args()  # 引数解析
     main()
