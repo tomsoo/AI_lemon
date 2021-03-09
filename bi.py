@@ -3,15 +3,15 @@ import torch
 import pandas
 import PIL
 import os
-import csv
 import cv2
 import pandas as pd
 
 class LemonDataset(torch.utils.data.Dataset):
-    def __init__(self, csv_path, images_folder, transform):
+    def __init__(self, csv_path, images_folder, transform, param):
         self.df = pandas.read_csv(csv_path)
         self.images_folder = images_folder
         self.transform = transform
+        self.param = param
 
     def __len__(self):
         return len(self.df)
@@ -19,33 +19,19 @@ class LemonDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         filename = self.df.at[index, 'id']
         label = self.df.at[index, 'class_num']
-        img = PIL.Image.open(os.path.join(self.images_folder, filename))
+        #img = PIL.Image.open(os.path.join(self.images_folder, filename))
+        img = read_img(filename, self.param)
         if self.transform is not None:
             img = self.transform(img)
         return img, label
 
-def read_csv(filename):
-    img = []
-    label_str = []
-    csv_file = open(filename)
-    f = next(csv.reader(csv_file))
-    f = csv.reader(csv_file, delimiter=",")
-    for line in f:
-        img.append(line[0])
-        label_str.append(line[1])
-    label = [int(i) for i in label_str]
-    return img, label
-
-def read_img(filename, data, param):
-    img = []
-    print("Loading " + data + " image...")
+def read_img(filename, param):
     grayed = param['grayed']
     bright = param['bright']
     blur = param['blur']
     morph = param['morph']
     threshold = param['threshold']
-    for f in filename:
-        img.append(cv2.imread("../dataset/" + data + "_images/" + f))
+    img = cv2.imread("../dataset/train_images/" + filename)
     if grayed:
         img = grayscale(img)
     if bright:
