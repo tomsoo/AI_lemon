@@ -1,5 +1,6 @@
 from bi import LemonDataset
 from model import CNN
+from guppy import hpy
 import torch
 import torchvision
 import torch.nn as nn
@@ -9,7 +10,9 @@ import json
 import datetime
 import os
 
+#@profile
 def main():
+    #h = hpy()
     timestamp = "{0:%Y%m%d-%H%M%S}".format(datetime.datetime.now())  # タイムスタンプ
     result_dir = './results/' + timestamp + '/'  # 結果を出力するディレクトリ名
     os.mkdir(result_dir)  # 結果を出力するディレクトリを作成
@@ -25,7 +28,7 @@ def main():
         'threshold' : False, # 閾値処理
         # 学習
         'batch_size' : 4,
-        'epoch_num' : 10,
+        'epoch_num' : 50,
     })  # 追加パラメータ
 
     # 実行時のパラメータをファイルとして記録
@@ -40,6 +43,9 @@ def main():
     valid_folder = param['valid_folder']
 
     batch_size = param['batch_size']
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("using device is {}".format(device))
 
     trans = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
                                             torchvision.transforms.Normalize((0.5,), (0.5,))]) # 画像の読み込み
@@ -56,7 +62,9 @@ def main():
     epoch_num = param['epoch_num']
 
     # ネットワークのインスタンス作成
-    cnn = CNN()
+    grayed = param['grayed']
+    cnn = CNN(grayed)
+    cnn = cnn.to(device)
 
     # 損失関数とオプティマイザーの定義
     criterion = nn.CrossEntropyLoss()
@@ -78,7 +86,7 @@ def main():
         for i, data in enumerate(train_dataloader, 0):
             # データをリストに格納
             inputs, labels = data
-
+            inputs, labels = inputs.to(device), labels.to(device)
             # パラメータを0にリセット
             optimizer.zero_grad()
 
@@ -100,11 +108,13 @@ def main():
             running_loss += train_loss.item()
         print('epochs: {}'.format(epoch + 1))
         print('train loss:{}, train acc:{}'.format(train_loss, train_acc))
+        #print(h.heap())
 
         valid_runnning_loss = 0.0
         with torch.no_grad():
             for data in valid_dataloader:
                 inputs, labels = data
+                inputs, labels = inputs.to(device), labels.to(device)
 
                 outputs = cnn(inputs)
 
@@ -131,7 +141,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--train_file', type=str, default='../dataset/train_images.csv')
     parser.add_argument('--train_folder', type=str, default='../dataset/train_images/')
-    parser.add_argument('--valid_file', type=str, default='../dataset/valid_images.csv')
+    parser.add_argument('--valid_file', type=str, default='../dataset/eval_images.csv')
     parser.add_argument('--valid_folder', type=str, default='../dataset/train_images/')
     args = parser.parse_args()  # 引数解析
     main()

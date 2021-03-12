@@ -9,14 +9,13 @@ def main():
     param = vars(args)  # コマンドライン引数を取り込み
     param.update({
         # 前処理
-        'grayed': True,  # グレースケール
-        'bright': True,  # 輝度調整
-        'blur': True,  # 平滑化(フィルター)
+        'grayed': False,  # グレースケール
+        'bright': False,  # 輝度調整
+        'blur': False,  # 平滑化(フィルター)
         'morph': False,  # 平滑化(モルフォロジー)
-        'threshold': True,  # 閾値処理
+        'threshold': False,  # 閾値処理
         # 学習
         'batch_size': 4,
-        'epoch_num': 10,
     })  # 追加パラメータ
 
     # パラメータの読み込み
@@ -27,7 +26,8 @@ def main():
 
     trans = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
                                             torchvision.transforms.Normalize((0.5,), (0.5,))]) # 画像の読み込み
-    eval_dataset = LemonDataset(eval_file, eval_folder, trans)
+    print("Loading eval image...")
+    eval_dataset = LemonDataset(eval_file, eval_folder, trans, param)
     eval_dataloader = torch.utils.data.DataLoader(dataset=eval_dataset, batch_size=batch_size, shuffle=True)
 
     # ネットワークモデル読み込み
@@ -50,6 +50,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--eval_file', type=str, default='../dataset/eval_images.csv')
     parser.add_argument('--eval_folder', type=str, default='../dataset/train_images/')
-    parser.add_argument('--model_path', type=str, default='./results/20210305-203632/cifar_net.pth')
+    parser.add_argument('--model_path', type=str, default='./results/20210313-010611/cifar_net.pth')
     args = parser.parse_args()  # 引数解析
     main()
