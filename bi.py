@@ -7,31 +7,41 @@ import cv2
 import pandas as pd
 
 class LemonDataset(torch.utils.data.Dataset):
-    def __init__(self, csv_path, images_folder, transform, param):
+    def __init__(self, csv_path, images_folder, transform, param, test=False):
         self.df = pandas.read_csv(csv_path)
         self.images_folder = images_folder
         self.transform = transform
         self.param = param
+        self.test = test
+        self.filename_list = []
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, index):
         filename = self.df.at[index, 'id']
-        label = self.df.at[index, 'class_num']
+        self.filename_list.append(filename)
         #img = PIL.Image.open(os.path.join(self.images_folder, filename))
-        img = read_img(filename, self.param)
+        img = read_img(filename, self.param, self.test)
         if self.transform is not None:
             img = self.transform(img)
-        return img, label
+        if not self.test:
+            label = self.df.at[index, 'class_num']
+            return img, label
+        else:
+            return img
 
-def read_img(filename, param):
+def read_img(filename, param, test):
     grayed = param['grayed']
     bright = param['bright']
     blur = param['blur']
     morph = param['morph']
     threshold = param['threshold']
-    img = cv2.imread("../dataset/train_images/" + filename)
+    if test:
+        label = "test"
+    else:
+        label = "train"
+    img = cv2.imread("../dataset/" + label + "_images/" + filename)
     if grayed:
         img = grayscale(img)
     if bright:

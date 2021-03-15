@@ -21,9 +21,9 @@ def main():
     param = vars(args)  # コマンドライン引数を取り込み
     param.update({
         # 前処理
-        'grayed': False, # グレースケール
-        'bright': False, # 輝度調整
-        'blur' : False, # 平滑化(フィルター)
+        'grayed': True, # グレースケール
+        'bright': True, # 輝度調整
+        'blur' : True, # 平滑化(フィルター)
         'morph' : False, # 平滑化(モルフォロジー)
         'threshold' : False, # 閾値処理
         # 学習
@@ -86,7 +86,7 @@ def main():
         for i, data in enumerate(train_dataloader, 0):
             # データをリストに格納
             inputs, labels = data
-            inputs, labels = inputs.to(device), labels.to(device)
+            inputs, labels = inputs.to(device, dtype=torch.float), labels.to(device)
             # パラメータを0にリセット
             optimizer.zero_grad()
 
@@ -114,7 +114,7 @@ def main():
         with torch.no_grad():
             for data in valid_dataloader:
                 inputs, labels = data
-                inputs, labels = inputs.to(device), labels.to(device)
+                inputs, labels = inputs.to(device, dtype=torch.float), labels.to(device)
 
                 outputs = cnn(inputs)
 
