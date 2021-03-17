@@ -22,13 +22,13 @@ def main():
     param.update({
         # 前処理
         'grayed': True, # グレースケール
-        'bright': True, # 輝度調整
-        'blur' : True, # 平滑化(フィルター)
+        'bright': False, # 輝度調整
+        'blur' : False, # 平滑化(フィルター)
         'morph' : False, # 平滑化(モルフォロジー)
         'threshold' : False, # 閾値処理
         # 学習
         'batch_size' : 4,
-        'epoch_num' : 50,
+        'epoch_num' : 100,
     })  # 追加パラメータ
 
     # 実行時のパラメータをファイルとして記録
@@ -50,7 +50,7 @@ def main():
     trans = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
                                             torchvision.transforms.Normalize((0.5,), (0.5,))]) # 画像の読み込み
     print("Loading train image...")
-    train_dataset = LemonDataset(train_file, train_folder, trans, param)
+    train_dataset = LemonDataset(train_file, train_folder, trans, param, timestamp=timestamp)
     train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 
     print("Loading valid image...")

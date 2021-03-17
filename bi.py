@@ -7,12 +7,13 @@ import cv2
 import pandas as pd
 
 class LemonDataset(torch.utils.data.Dataset):
-    def __init__(self, csv_path, images_folder, transform, param, test=False):
+    def __init__(self, csv_path, images_folder, transform, param, test=False, timestamp=None):
         self.df = pandas.read_csv(csv_path)
         self.images_folder = images_folder
         self.transform = transform
         self.param = param
         self.test = test
+        self.timestamp = timestamp
         self.filename_list = []
 
     def __len__(self):
@@ -22,7 +23,7 @@ class LemonDataset(torch.utils.data.Dataset):
         filename = self.df.at[index, 'id']
         self.filename_list.append(filename)
         #img = PIL.Image.open(os.path.join(self.images_folder, filename))
-        img = read_img(filename, self.param, self.test)
+        img = read_img(filename, self.param, self.test, self.timestamp)
         if self.transform is not None:
             img = self.transform(img)
         if not self.test:
@@ -31,7 +32,7 @@ class LemonDataset(torch.utils.data.Dataset):
         else:
             return img
 
-def read_img(filename, param, test):
+def read_img(filename, param, test, timestamp):
     grayed = param['grayed']
     bright = param['bright']
     blur = param['blur']
@@ -52,10 +53,13 @@ def read_img(filename, param, test):
         img = morphology(img)
     if threshold:
         img = threshold_process(img)
+    if timestamp:
+        os.makedirs('./results/' + timestamp + '/preprocess', exist_ok=True)
+        cv2.imwrite('./results/' + timestamp + '/preprocess/' + filename, img)
     return img
 
 def write_img(img_list, filename, timestamp):
-    os.mkdir('./results/' + timestamp + '/preprocess')  # 結果を出力するディレクトリを作成
+    os.mkdir('./results/' + timestamp + '/preprocess', exit=True)  # 結果を出力するディレクトリを作成
     for i in range(len(img_list)):
         cv2.imwrite('./results/' + timestamp + '/preprocess/' + filename[i], img_list[i])
 
