@@ -10,7 +10,7 @@
 ### 環境構築
 ```
 cd model
-mkdir result
+mkdir results
 cd ../
 pip install -r requirements.txt
 ```
@@ -29,10 +29,10 @@ python train.py -h
 で見ることができる．
 param で指定するパラメータは，直接プログラム内の変数を書き換える．
 
-出力ファイル群は，resultディレクトリ内にディレクトリとして出力される．
+出力ファイル群は，resultsディレクトリ内にディレクトリとして出力される．
 出力結果は，例えば，以下のようなファイル構成．
 ```
-result/20200608-214943
+resultss/20200608-214943
 ├── parameter.json  # 使用したパラメータ等
 └── preprocess  # 前処理の結果を出力
 ```
