@@ -5,6 +5,7 @@ import PIL
 import os
 import cv2
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class LemonDataset(torch.utils.data.Dataset):
     def __init__(self, csv_path, images_folder, transform, param, test=False, timestamp=None):
@@ -66,6 +67,19 @@ def write_img(img_list, filename, timestamp):
 def check_lemon_num():
     df = pd.read_csv('./dataset/train_images.csv',sep=',')
     df.head(3)
+
+def loss_visualize(name, loss, num, timestamp):
+    plt.figure()
+    loss_list = []
+    for l in loss:
+        loss_list.append(l.to('cpu').detach().numpy().copy())
+    plt.plot([x for x in range(num)], loss_list)
+    plt.xlabel("epoch")
+    plt.ylabel("loss")
+    plt.savefig("./results" + timestamp + name)
+    plt.close()
+
+
 
 if __name__=='__main__':
     check_lemon_num()

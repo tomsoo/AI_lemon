@@ -1,4 +1,4 @@
-from bi import LemonDataset
+from bi import LemonDataset, loss_visualize
 from model import CNN
 from guppy import hpy
 import torch
@@ -9,6 +9,7 @@ import argparse
 import json
 import datetime
 import os
+
 
 #@profile
 def main():
@@ -28,7 +29,7 @@ def main():
         'threshold' : False, # 閾値処理
         # 学習
         'batch_size' : 4,
-        'epoch_num' : 100,
+        'epoch_num' : 5,
     })  # 追加パラメータ
 
     # 実行時のパラメータをファイルとして記録
@@ -102,10 +103,10 @@ def main():
             train_acc = train_correct/train_total*100
             optimizer.step()
 
-            train_loss_list.append(train_loss)
-            train_acc_list.append(train_acc)
             # 計算状態の出力
             running_loss += train_loss.item()
+        train_loss_list.append(train_loss)
+        train_acc_list.append(train_acc)
         print('epochs: {}'.format(epoch + 1))
         print('train loss:{}, train acc:{}'.format(train_loss, train_acc))
         #print(h.heap())
@@ -124,17 +125,16 @@ def main():
                 valid_correct += (predicted == labels).sum().item()
 
                 valid_acc = valid_correct/valid_total * 100
+        valid_loss_list.append(valid_loss)
+        valid_acc_list.append(valid_acc)
 
-                valid_loss_list.append(valid_loss)
-                valid_acc_list.append(valid_acc)
         print('valid loss:{}, valid acc:{}'.format(valid_loss, valid_acc))
-
-
+    loss_visualize("train.png", train_loss_list, epoch_num, timestamp)
+    loss_visualize("valid.png", valid_loss_list, epoch_num, timestamp)
     print("Finished Training")
 
     # 計算結果のモデルを保存
     torch.save(cnn.state_dict(), './results/' + timestamp + '/cifar_net.pth')
-
     print("Finished")
 
 if __name__ == '__main__':
