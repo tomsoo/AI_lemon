@@ -23,7 +23,6 @@ class LemonDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         filename = self.df.at[index, 'id']
         self.filename_list.append(filename)
-        #img = PIL.Image.open(os.path.join(self.images_folder, filename))
         img = read_img(filename, self.param, self.test, self.timestamp)
         if self.transform is not None:
             img = self.transform(img)

@@ -42,6 +42,12 @@ resultss/20200608-214943
 ```
 python train.py
 ```
+
+- 交差検証
+```
+python cv.py
+```
+
 - 評価
 ```
 python eval.py
