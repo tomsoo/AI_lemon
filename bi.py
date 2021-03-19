@@ -68,7 +68,7 @@ def check_lemon_num():
     df = pd.read_csv('./dataset/train_images.csv',sep=',')
     df.head(3)
 
-def loss_visualize(name, loss, num, timestamp):
+def loss_visualize(name, loss, num, timestamp, k):
     plt.figure()
     loss_list = []
     for l in loss:
@@ -76,9 +76,8 @@ def loss_visualize(name, loss, num, timestamp):
     plt.plot([x for x in range(num)], loss_list)
     plt.xlabel("epoch")
     plt.ylabel("loss")
-    plt.savefig("./results" + timestamp + name)
+    plt.savefig("./results/" + timestamp + "/" + name + "_" + k + ".png")
     plt.close()
-
 
 
 if __name__=='__main__':

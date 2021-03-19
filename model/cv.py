@@ -25,14 +25,14 @@ def main():
     param = vars(args)  # コマンドライン引数を取り込み
     param.update({
         # 前処理
-        'grayed': True, # グレースケール
+        'grayed': False, # グレースケール
         'bright': False, # 輝度調整
         'blur' : False, # 平滑化(フィルター)
         'morph' : False, # 平滑化(モルフォロジー)
         'threshold' : False, # 閾値処理
         # 学習
         'batch_size' : 4,
-        'epoch_num' : 5,
+        'epoch_num' : 100,
     })  # 追加パラメータ
 
     # 実行時のパラメータをファイルとして記録
@@ -135,8 +135,8 @@ def main():
             valid_acc_list.append(valid_acc)
 
             print('valid loss:{}, valid acc:{}'.format(valid_loss, valid_acc))
-        loss_visualize("train.png", train_loss_list, epoch_num, timestamp)
-        loss_visualize("valid.png", valid_loss_list, epoch_num, timestamp)
+        loss_visualize("train", train_loss_list, epoch_num, timestamp, k)
+        loss_visualize("valid", valid_loss_list, epoch_num, timestamp, k)
         print("Finished Training")
 
         k += 1
