@@ -25,14 +25,10 @@ def main():
     param = vars(args)  # コマンドライン引数を取り込み
     param.update({
         # 前処理
-        'grayed': False, # グレースケール
-        'bright': False, # 輝度調整
-        'blur' : False, # 平滑化(フィルター)
-        'morph' : False, # 平滑化(モルフォロジー)
-        'threshold' : False, # 閾値処理
+        'grayed': True, # グレースケール
         # 学習
         'batch_size' : 4,
-        'epoch_num' : 100,
+        'epoch_num' : 50,
     })  # 追加パラメータ
 
     # 実行時のパラメータをファイルとして記録
@@ -42,16 +38,16 @@ def main():
     # パラメータの読み込み
     data_file = param['data_file']
     data_folder = param['data_folder']
-
     batch_size = param['batch_size']
+    grayed = param['grayed']
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("using device is {}".format(device))
 
     trans = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
                                             torchvision.transforms.Normalize((0.5,), (0.5,))]) # 画像の読み込み
-    # kfold
-    dataset = LemonDataset(data_file, data_folder, trans, param, timestamp=timestamp)
+    # kfoldの設定
+    dataset = LemonDataset(data_file, data_folder, trans, param, grayed)
     kf = KFold(n_splits=5)
     k = 0
     cv = 0
@@ -60,7 +56,6 @@ def main():
     epoch_num = param['epoch_num']
 
     # ネットワークのインスタンス作成
-    grayed = param['grayed']
     cnn = CNN(grayed)
     cnn = cnn.to(device)
 
@@ -68,6 +63,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(cnn.parameters(), lr=0.001, momentum=0.9)
 
+    # 交差検証
     for _fold, (train_index, valid_index) in enumerate(kf.split(dataset)):
         print("k = " + str(k))
         print("Loading train image...")
@@ -148,7 +144,7 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_file', type=str, default='../dataset/all_images.csv')
-    parser.add_argument('--data_folder', type=str, default='../dataset/train_images/')
+    parser.add_argument('--data_file', type=str, default='../dataset/train_images.csv')
+    parser.add_argument('--data_folder', type=str, default='../dataset/train_preprocess/')
     args = parser.parse_args()  # 引数解析
     main()

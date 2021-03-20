@@ -22,7 +22,7 @@ def main():
     param = vars(args)  # コマンドライン引数を取り込み
     param.update({
         # 前処理
-        'grayed': True, # グレースケール
+        'grayed': False, # グレースケール
         'bright': False, # 輝度調整
         'blur' : False, # 平滑化(フィルター)
         'morph' : False, # 平滑化(モルフォロジー)
@@ -51,11 +51,11 @@ def main():
     trans = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
                                             torchvision.transforms.Normalize((0.5,), (0.5,))]) # 画像の読み込み
     print("Loading train image...")
-    train_dataset = LemonDataset(train_file, train_folder, trans, param, timestamp=timestamp)
+    train_dataset = LemonDataset(train_file, train_folder, trans, param, grayed)
     train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 
     print("Loading valid image...")
-    valid_dataset = LemonDataset(valid_file, valid_folder, trans, param)
+    valid_dataset = LemonDataset(valid_file, valid_folder, trans, param, grayed)
     valid_dataloader = torch.utils.data.DataLoader(dataset=valid_dataset, batch_size=batch_size, shuffle=True)
 
 
@@ -140,8 +140,8 @@ def main():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--train_file', type=str, default='../dataset/train_images.csv')
-    parser.add_argument('--train_folder', type=str, default='../dataset/train_images/')
+    parser.add_argument('--train_folder', type=str, default='../dataset/train_preprocess/')
     parser.add_argument('--valid_file', type=str, default='../dataset/eval_images.csv')
-    parser.add_argument('--valid_folder', type=str, default='../dataset/train_images/')
+    parser.add_argument('--valid_folder', type=str, default='../dataset/train_preprocess/')
     args = parser.parse_args()  # 引数解析
     main()

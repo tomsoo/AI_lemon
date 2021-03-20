@@ -13,6 +13,7 @@ cd model
 mkdir results
 cd ../
 pip install -r requirements.txt
+PYTHONPATH=/home/stock/
 ```
 
 ### プログラム構成
@@ -32,23 +33,31 @@ param で指定するパラメータは，直接プログラム内の変数を�
 出力ファイル群は，resultsディレクトリ内にディレクトリとして出力される．
 出力結果は，例えば，以下のようなファイル構成．
 ```
-resultss/20200608-214943
+results/20200608-214943
 ├── parameter.json  # 使用したパラメータ等
-└── preprocess  # 前処理の結果を出力
+└── cifar_net.pth  # モデルを出力
 ```
 
 ### 学習
-- 学習
+- Preprocessing
+
+コマンドライン上から，前処理の種類を指定(グレースケール，平滑化)
 ```
-python train.py
+python preprocessing.py -g -bl
 ```
 
-- 交差検証
+- Learning
+
+交差検証を行う
 ```
 python cv.py
 ```
 
 - 評価
+
+--model_pathでモデルのパスを指定
+
+予測結果として，result.csvを出力
 ```
 python eval.py
 ```
